@@ -18,4 +18,7 @@ interface TaskRepository {
 
     @DELETE("/tasks/{id}")
     fun delete(@Path("id") id: Long): Call<Void>
+
+    @POST("/tasks/{id}/completed")
+    fun complete(@Path("id") id: Long): Call<Task>
 }

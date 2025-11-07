@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.gms.google.services)
 }
 
 android {
@@ -48,4 +49,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.swipe.refresh.layout)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
+    implementation(libs.preference.ktx)
 }

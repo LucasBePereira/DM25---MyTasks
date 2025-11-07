@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "605195836979",
+    "project_id": "minhastarefas-5718b",
+    "storage_bucket": "minhastarefas-5718b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605195836979:android:7edee36275989059344d46",
+        "android_client_info": {
+          "package_name": "com.aduilio.mytasks"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-lrqcEA1ZU9VRYJosppA0eY3PywouTtA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

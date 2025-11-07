@@ -33,4 +33,12 @@ class TaskService : ViewModel() {
 
         return liveData;
     }
+
+    fun complete(id: Long): LiveData<ResponseDto<Task>> {
+        val taskLiveData = MutableLiveData<ResponseDto<Task>>()
+
+        taskRepository.complete(id).enqueue(ServiceCallBack(taskLiveData))
+
+        return taskLiveData
+    }
 }

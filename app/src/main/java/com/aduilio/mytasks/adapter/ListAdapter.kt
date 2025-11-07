@@ -10,10 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aduilio.mytasks.R
 import com.aduilio.mytasks.databinding.ListItemBinding
 import com.aduilio.mytasks.entity.Task
+import com.aduilio.mytasks.listener.ClickListener
 
 class ListAdapter(
     private val context: Context,
-    private val emptyMessage: TextView
+    private val emptyMessage: TextView,
+    private val listener: ClickListener
 ) : RecyclerView.Adapter<ItemViewHolder>() {
 
     private val items = mutableListOf<Task>()
@@ -25,7 +27,7 @@ class ListAdapter(
             LayoutInflater.from(parent.context), parent, false
         )
 
-        return ItemViewHolder(binding)
+        return ItemViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {

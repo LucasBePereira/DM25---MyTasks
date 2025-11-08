@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.aduilio.mytasks"
+    namespace = "com.lucas.mytasks"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.aduilio.mytasks"
+        applicationId = "com.lucas.mytasks"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

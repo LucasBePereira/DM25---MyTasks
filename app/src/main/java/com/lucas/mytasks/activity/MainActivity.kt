@@ -116,17 +116,41 @@ class MainActivity : AppCompatActivity() {
 //            }
         }
 
+
         ItemTouchHelper(TouchCallback(object : SwipeListener {
             override fun onSwipe(position: Int) {
-                adapter.getItem(position).id?.let {
-                    taskService.delete(it).observe(this@MainActivity) { response ->
-                        if (response.error) {
-                            adapter.notifyItemChanged(position)
-                        } else {
-                            adapter.removeItem(position)
+                // Pega a tarefa que foi deslizada
+                val taskToDelete = adapter.getItem(position)
+
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle(R.string.delete_task_title)
+                    .setMessage(getString(R.string.delete_task_message, taskToDelete.title)) // Exibe o título da tarefa
+                    .setPositiveButton(R.string.delete) { _, _ ->
+                        // O usuário CLICOU EM "EXCLUIR"
+                        // Prossiga com a exclusão
+                        taskToDelete.id?.let { taskId ->
+                            taskService.delete(taskId).observe(this@MainActivity) { response ->
+                                if (response.error) {
+                                    // Se a exclusão falhar no servidor, restaura o item na lista
+                                    adapter.notifyItemChanged(position)
+                                } else {
+                                    // Se a exclusão for bem-sucedida, remove o item do adapter
+                                    adapter.removeItem(position)
+                                }
+                            }
                         }
                     }
-                }
+                    .setNegativeButton(R.string.cancel) { _, _ ->
+                        // O usuário CLICOU EM "CANCELAR"
+                        // Notifica o adapter para redesenhar o item na sua posição original
+                        adapter.notifyItemChanged(position)
+                    }
+                    .setOnCancelListener {
+                        // O usuário clicou fora do diálogo (mesmo que cancelar)
+                        adapter.notifyItemChanged(position)
+                    }
+                    .create()
+                    .show()
             }
         })).attachToRecyclerView(binding.rvMain)
 

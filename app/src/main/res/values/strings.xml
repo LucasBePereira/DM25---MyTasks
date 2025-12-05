@@ -15,6 +15,11 @@
     <string name="permission">Permissões</string>
     <string name="notification_permission_rationale">O aplicativo irá enviar notificações para você quando houver tarefas pendentes.</string>
 
+    <string name="delete_task_title">Delete Task</string>
+    <string name="delete_task_message">Are you sure you want to delete the task \"%1$s\"?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+
     <string name="preferences">Configurações</string>
     <string name="daily_notification">Notificações diárias</string>
     <string name="daily_notification_on">Você receberá uma notificação diária.</string>

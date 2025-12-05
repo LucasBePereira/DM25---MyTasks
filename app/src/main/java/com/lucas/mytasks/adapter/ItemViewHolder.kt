@@ -1,5 +1,7 @@
 package com.lucas.mytasks.adapter
 
+import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.lucas.mytasks.R
 import com.lucas.mytasks.databinding.ListItemBinding
@@ -12,23 +14,24 @@ class ItemViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun setData(task: Task) {
+
         binding.tvTitle.text = task.title
         binding.tvDate.text = task.formatDateTime()
 
-        if (task.completed) {
-            binding.tvTitle.setBackgroundResource(R.color.green)
-        } else {
-            binding.tvTitle.setBackgroundResource(R.color.blue)
-        }
+        binding.tvTitle.background = null
+
 
         binding.root.setOnClickListener {
             listener.onClick(task)
         }
 
         binding.root.setOnCreateContextMenuListener { menu, _, _ ->
-            menu.add(R.string.mark_completed).setOnMenuItemClickListener {
-                task.id?.let { id -> listener.onComplete(task.id) }
-                true
+            // Mostra a opção "Marcar como Concluída" apenas se a tarefa não estiver concluída
+            if (!task.completed) {
+                menu.add(R.string.mark_completed).setOnMenuItemClickListener {
+                    task.id?.let { id -> listener.onComplete(id) }
+                    true
+                }
             }
         }
     }

@@ -17,6 +17,9 @@ import com.lucas.mytasks.service.TaskService
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import java.util.Calendar
 
 class FormActivity : AppCompatActivity() {
 
@@ -61,48 +64,117 @@ class FormActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun initComponents() {
-        binding.btSave.setOnClickListener {
-            binding.layoutTitle.error = null
+    private fun saveOrUpdateTask(task: Task) {
+        val operation = if (task.id == null) {
+            taskService.create(task)
+        } else {
+            taskService.update(task)
+        }
 
-            if (binding.etTitle.text.isNullOrEmpty()) {
-                binding.layoutTitle.error = ContextCompat.getString(this, R.string.title_required)
+        operation.observe(this) { response ->
+            if (response.error) {
+                val message = if (task.id == null) R.string.create_error else R.string.update_error
+                showAlert(message)
             } else {
-                val date = if (binding.etDate.hasValue()) {
-                    LocalDate.parse(binding.etDate.value(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                } else null
-
-                val time = if (binding.etTime.hasValue()) {
-                    LocalTime.parse(binding.etTime.value(), DateTimeFormatter.ofPattern("HH:mm"))
-                } else null
-
-                val task = Task(
-                    id = taskId,
-                    title = binding.etTitle.value(),
-                    description = binding.etDescription.value(),
-                    date = date,
-                    time = time
-                )
-
-                if (taskId == null) {
-                    taskService.create(task).observe(this) { response ->
-                        if (response.error) {
-                            showAlert(R.string.create_error)
-                        } else {
-                            finish()
-                        }
-                    }
-                } else {
-                    taskService.update(task).observe(this) { response ->
-                        if (response.error) {
-                            showAlert(R.string.update_error)
-                        } else {
-                            finish()
-                        }
-                    }
-                }
+                finish()
             }
         }
+    }
+
+    private fun initComponents() {
+        // 1. Configura os cliques nos campos de data e hora para abrir os seletores
+        binding.etDate.setOnClickListener {
+            showDatePicker()
+        }
+
+        binding.etTime.setOnClickListener {
+            showTimePicker()
+        }
+
+        // 2. Configura o clique do botão Salvar
+        binding.btSave.setOnClickListener {
+            // Limpa os erros anteriores
+            binding.layoutTitle.error = null
+            binding.layoutDate.error = null
+            binding.layoutTime.error = null
+
+            val title = binding.etTitle.value()
+
+            // Valida se o título não está em branco
+            if (title.isBlank()) {
+                binding.layoutTitle.error = getString(R.string.title_required)
+                return@setOnClickListener // Para a execução
+            }
+
+            val dateText = binding.etDate.value()
+            val timeText = binding.etTime.value()
+            var date: LocalDate? = null
+            var time: LocalTime? = null
+
+            // Tenta converter a data de forma segura (necessário caso o usuário edite o campo)
+            if (dateText.isNotBlank()) {
+                try {
+                    date = LocalDate.parse(dateText, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                } catch (e: Exception) {
+                    binding.layoutDate.error = "Data inválida (use dd/MM/aaaa)"
+                    return@setOnClickListener
+                }
+            }
+
+            // Tenta converter a hora de forma segura
+            if (timeText.isNotBlank()) {
+                try {
+                    time = LocalTime.parse(timeText, DateTimeFormatter.ofPattern("HH:mm"))
+                } catch (e: Exception) {
+                    binding.layoutTime.error = "Hora inválida (use HH:mm)"
+                    return@setOnClickListener
+                }
+            }
+
+            // Se todas as validações passaram, cria o objeto Task
+            val task = Task(
+                id = taskId,
+                title = title,
+                description = binding.etDescription.value(),
+                date = date,
+                time = time
+            )
+
+            // Chama a função auxiliar para salvar ou atualizar
+            saveOrUpdateTask(task)
+        }
+    }
+
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val datePicker = DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                // Formata a data e a define no EditText
+                binding.etDate.setText(selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePicker.show()
+    }
+
+    private fun showTimePicker() {
+        val calendar = Calendar.getInstance()
+        val timePicker = TimePickerDialog(
+            this,
+            { _, hourOfDay, minute ->
+                val selectedTime = LocalTime.of(hourOfDay, minute)
+                // Formata a hora e a define no EditText
+                binding.etTime.setText(selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")))
+            },
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            true // true para usar o formato 24h
+        )
+        timePicker.show()
     }
 
     private fun showAlert(message: Int) {

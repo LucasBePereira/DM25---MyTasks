@@ -11,6 +11,7 @@ import com.lucas.mytasks.R
 import com.lucas.mytasks.databinding.ListItemBinding
 import com.lucas.mytasks.entity.Task
 import com.lucas.mytasks.listener.ClickListener
+import com.lucas.mytasks.entity.TaskStatus
 
 class ListAdapter(
     private val context: Context,
@@ -31,7 +32,24 @@ class ListAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.setData(items[position])
+        val task = items[position]
+
+        // 1. Continua chamando seu método que configura os dados (textos, cliques, etc.)
+        holder.setData(task)
+
+        // 2. Adiciona a lógica para mudar a cor do card
+        val cardView = holder.itemView // Assumindo que a raiz do seu `list_item.xml` é um CardView
+
+        // Pega a cor correspondente ao status da tarefa
+        val colorResId = when (task.getStatus()) {
+            TaskStatus.OVERDUE -> R.color.red
+            TaskStatus.DUE_TODAY -> R.color.yellow
+            TaskStatus.COMPLETED -> R.color.green
+            TaskStatus.IN_PROGRESS -> R.color.blue
+        }
+
+        // Aplica a cor de fundo
+        cardView.setBackgroundColor(ContextCompat.getColor(context, colorResId))
     }
 
     override fun getItemCount() = items.size
